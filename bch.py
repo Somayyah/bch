@@ -55,24 +55,30 @@ def main():
             print(f"Error: Patch data is neither a valid Hex raw value or exists as a file")
             sys.exit(1)
     
-    size_bytes  = int(sys.argv[4])
+    try:
+        size_bytes = int(sys.argv[4], 0)
+        if size_bytes < 0:
+            print("Error: Replacement size must be a positive number.")
+            sys.exit(1)
+    except ValueError:
+        print("Error: Invalid size value.")
+        sys.exit(1)
+        
     output_file = sys.argv[5] if len(sys.argv) > 5 else sys.argv[1] + "_patched"
     
     try:
         with open(infile, 'rb') as rf:
             read_file = rf.read()
-            with open(output_file, 'wb') as wf:
-                ## logic goes here
-                                
-                if (len(read_file) > offset):
-                    HEAD = read_file[:offset]
-                    
-                    TAIL = read_file[(offset + size_bytes):]
-                else:
-                    print("Error : Offset is way beyond the file size.")
-                    sys.exit(1)
-                wf.write(HEAD + data + TAIL)
 
+            if offset + size_bytes > len(read_file):
+                print("Error: Replacement range exceeds file size.")
+                sys.exit(1)
+
+            HEAD = read_file[:offset]
+            TAIL = read_file[offset + size_bytes:]
+
+            with open(output_file, 'wb') as wf:
+                wf.write(HEAD + data + TAIL)
 
     except FileNotFoundError:
         print(f"Error: File '{infile}' not found.")
