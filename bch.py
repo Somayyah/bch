@@ -2,8 +2,20 @@
 
 import sys
 
+def is_valid_hex_bytes(s):
+    try:
+        bytes.fromhex(s)
+        return True
+    except ValueError:
+        return False
+
 def main():
-    if len(sys.argv) < 3:
+    infile = ""
+    offset = 0
+    data = bytes.fromhex("")
+    output_file = ""
+    
+    if len(sys.argv) < 4:
         print(
             "Usage:\n"
             "  python bch.py <infile> <offset> <patch_data> [output_file]\n\n"
@@ -19,24 +31,42 @@ def main():
         sys.exit(1)
 
     infile = sys.argv[1]
-    offset = sys.argv[2]
-    bytes_arg = sys.argv[3]
+    
+    try:
+        if int(sys.argv[2]) > 0 :
+            offset = int(sys.argv[2])
+        else:
+            print(f"Error : Invalid offset, must be a positive value.")
+            sys.exit(1)
+    except ValueError:
+        print(f"Error : Invalid offset, not a valid number.")
+        sys.exit(1)
+
+        
+    try:
+        with open(sys.argv[3], 'rb') as df:
+            data = df.read()
+    except FileNotFoundError:
+        if is_valid_hex_bytes(sys.argv[3]):
+            data = bytes.fromhex(sys.argv[3])
+            print("Patch_data file not found, assuming it's a raw Hex string.")
+        else :
+            print(f"Error: Patch data is neither a valid Hex Raw value or exists as a file")
+            sys.exit(1)
+            
     output_file = sys.argv[4] if len(sys.argv) > 4 else sys.argv[1] + "_patched"
     
     try:
         with open(infile, 'rb') as rf:
             with open(output_file, 'wb') as wf:
-                chunk_size = 4096
-                rf_chunk = rf.read(chunk_size)
-                while len(rf_chunk) > 0:
-                    wf.write(rf_chunk)
-                    rf_chunk = rf.read(chunk_size)
-                    
+                ## logic goes here
+                pass
     except FileNotFoundError:
         print(f"Error: File '{infile}' not found.")
         sys.exit(1)
 
-    print("Done, patched file : {output_file}")
+    print(f"Done, patched file: {output_file}")
+
     
 if __name__ == "__main__":
     main()
