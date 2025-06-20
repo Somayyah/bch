@@ -14,15 +14,18 @@ def main():
     offset = 0
     data = bytes.fromhex("")
     output_file = ""
+    size_bytes = 0
     
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 5:
         print(
             "Usage:\n"
-            "  python bch.py <infile> <offset> <patch_data> [output_file]\n\n"
+            "  python bch.py <infile> <offset> <patch_data> <bytes> [output_file]\n\n"
             "Arguments:\n"
             "  <infile>      Path to the binary file to patch\n"
             "  <offset>      Byte offset (decimal) where patch data will be inserted\n"
             "  <patch_data>  is either a path to a patch file or a raw hex string (file takes precedence if it exists)"
+            "  <bytes>       How much do you want to replace? "
+
             "  [output_file] Optional output filename (default: <infile>_patched)\n\n"
             "Example:\n"
             "  python bch.py firmware.bin 1024 patch.bin firmware.bin_patched\n"
@@ -42,8 +45,8 @@ def main():
         sys.exit(1)
         
     try:
-        with open(sys.argv[3], 'r') as df:
-            data = bytes.fromhex(df.read())
+        with open(sys.argv[3], 'rb') as df:
+            data = df.read()
     except FileNotFoundError:
         if is_valid_hex_bytes(sys.argv[3]):
             data = bytes.fromhex(sys.argv[3])
@@ -51,22 +54,23 @@ def main():
         else :
             print(f"Error: Patch data is neither a valid Hex raw value or exists as a file")
             sys.exit(1)
-            
-    output_file = sys.argv[4] if len(sys.argv) > 4 else sys.argv[1] + "_patched"
+    
+    size_bytes  = int(sys.argv[4])
+    output_file = sys.argv[5] if len(sys.argv) > 5 else sys.argv[1] + "_patched"
     
     try:
         with open(infile, 'rb') as rf:
             read_file = rf.read()
             with open(output_file, 'wb') as wf:
                 ## logic goes here
+                                
                 if (len(read_file) > offset):
                     HEAD = read_file[:offset]
-                else if (offset == len(read_file)):
-                    wf.write(HEAD + data)
+                    
+                    TAIL = read_file[(offset + size_bytes):]
                 else:
                     print("Error : Offset is way beyond the file size.")
                     sys.exit(1)
-                TAIL = read_file[offset + len(data):]
                 wf.write(HEAD + data + TAIL)
 
 
