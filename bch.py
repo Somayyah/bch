@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import argparse
 import sys
+import structs
 
 def main():
     if len(sys.argv) != 4:
@@ -15,7 +15,13 @@ def main():
     with open(file, 'rb') as f:
         f_content = f.read()
         print(f_content)
+    
+    new_file = file+"_new"
+    
+    with open(new_file, 'wb') as n:
+        n.write(f_content)
 
-
+    print("Done")
+    
 if __name__ == "__main__":
     main()
