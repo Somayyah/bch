@@ -36,7 +36,7 @@ def main():
         print(f"Error: File '{infile}' not found.")
         sys.exit(1)
 
-    print("Done")
+    print("Done, patched file : {output_file}")
     
 if __name__ == "__main__":
     main()
