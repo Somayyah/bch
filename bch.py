@@ -13,7 +13,7 @@ def main():
             "  <patch_data>  is either a path to a patch file or a raw hex string (file takes precedence if it exists)"
             "  [output_file] Optional output filename (default: <infile>_patched)\n\n"
             "Example:\n"
-            "  python bch.py firmware.bin 1024 patch.bin firmware_patched.bin\n"
+            "  python bch.py firmware.bin 1024 patch.bin firmware.bin_patched\n"
             "  python bch.py firmware.bin 1024 deadbeef\n"
         )
         sys.exit(1)
