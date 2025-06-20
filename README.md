@@ -1,6 +1,6 @@
 # bch
 
-a tool to safely find and replace data chunks in binary files without corrupting surrounding data.
+a tool to safely replace data chunks in binary files without corrupting surrounding data.
 
 ## Usage
 
