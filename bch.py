@@ -33,34 +33,43 @@ def main():
     infile = sys.argv[1]
     
     try:
-        if int(sys.argv[2]) > 0 :
-            offset = int(sys.argv[2])
-        else:
-            print(f"Error : Invalid offset, must be a positive value.")
+        offset = int(sys.argv[2], 0)
+        if offset < 0:
+            print("Error: Invalid offset, must be a positive value.")
             sys.exit(1)
     except ValueError:
-        print(f"Error : Invalid offset, not a valid number.")
+        print("Error: Invalid offset, not a valid number.")
         sys.exit(1)
-
         
     try:
-        with open(sys.argv[3], 'rb') as df:
-            data = df.read()
+        with open(sys.argv[3], 'r') as df:
+            data = bytes.fromhex(df.read())
     except FileNotFoundError:
         if is_valid_hex_bytes(sys.argv[3]):
             data = bytes.fromhex(sys.argv[3])
             print("Patch_data file not found, assuming it's a raw Hex string.")
         else :
-            print(f"Error: Patch data is neither a valid Hex Raw value or exists as a file")
+            print(f"Error: Patch data is neither a valid Hex raw value or exists as a file")
             sys.exit(1)
             
     output_file = sys.argv[4] if len(sys.argv) > 4 else sys.argv[1] + "_patched"
     
     try:
         with open(infile, 'rb') as rf:
+            read_file = rf.read()
             with open(output_file, 'wb') as wf:
                 ## logic goes here
-                pass
+                if (len(read_file) > offset):
+                    HEAD = read_file[:offset]
+                else if (offset == len(read_file)):
+                    wf.write(HEAD + data)
+                else:
+                    print("Error : Offset is way beyond the file size.")
+                    sys.exit(1)
+                TAIL = read_file[offset + len(data):]
+                wf.write(HEAD + data + TAIL)
+
+
     except FileNotFoundError:
         print(f"Error: File '{infile}' not found.")
         sys.exit(1)
